@@ -1,7 +1,7 @@
 import sys
 
 #Add error handling in file operation
-f = open("mandelbrot.b", "r")
+f = open("brainfuck.txt", "r")
 prg = f.read()
 f.close()
 
