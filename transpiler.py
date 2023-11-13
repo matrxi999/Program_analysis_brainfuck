@@ -1,43 +1,39 @@
 def translate(sourcecode):
     out = [
-        (0, "from collections import defaultdict"),
-        (0, "from msvcrt import getch"),
-        (0, "putch = lambda x: print(chr(x), end='')"),
-        (0, "data = defaultdict(int)"),
+        (0, "printChar = lambda x: print(chr(x), end='')"),
+        (0, "data = [0]*30000"),
         (0, "index = 0"),
         (0, "def add(x):data[index] = (data[index] + x) % 256"),
         (0, "def sub(x):data[index] = (data[index] - x) % 256"),
     ]
     level = 0
-    count = 0
     operation = None
-    for c in sourcecode:
-        if c == operation:
-            count += 1
-        else:
-            if operation == "+":
-                out.append((level, f"add({count!r})"))
-            elif operation == "-":
-                out.append((level, f"sub({count!r})"))
-            elif operation == ">":
-                out.append((level, f"index += {count!r}"))
-            elif operation == "<":
-                out.append((level, f"index -= {count!r}"))
-            operation = None
-
-            if c in "+-><":
-                operation = c
-                count = 1
-            elif c == ".":
-                out.append((level, "putch(data[index])"))
-            elif c == ",":
-                out.append((level, "data[index] = getch()[0]"))
-            elif c == "[":
-                out.append((level, "while data[index]:"))
-                level += 1
-            elif c == "]":
-                assert level
+    for operation in sourcecode:
+        if operation == "+":
+            out.append((level, f"add(1)"))
+        elif operation == "-":
+            out.append((level, f"sub(1)"))
+        elif operation == ">":
+            out.append((level, f"index += 1"))
+        elif operation == "<":
+            out.append((level, f"index -= 1"))
+        elif operation == ".":
+            out.append((level, "printChar(data[index])"))
+        elif operation == ",":
+            out.append((level, "data[index] = ord(input())"))
+        elif operation == "[":
+            out.append((level, "while data[index]:"))
+            level += 1
+        elif operation == "]":
+            if level > 0:
                 level -= 1
-    return "\n".join("    " * indent + line for indent, line in out)
 
-print(translate("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."))
+    if level != 0:
+        raise Exception("Missing closing bracket!")
+    
+    return "\n".join("    " * indent + line for indent, line in out)
+ 
+python_code = translate(">++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-]<+.")
+
+with open("Output.py", "w", encoding="utf-8") as text_file:
+    text_file.write(python_code)

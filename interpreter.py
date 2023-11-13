@@ -1,6 +1,5 @@
 import sys
 
-#Add error handling in file operation
 f = open("brainfuck.txt", "r")
 prg = f.read()
 f.close()
