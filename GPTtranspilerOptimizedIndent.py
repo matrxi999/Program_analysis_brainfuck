@@ -108,20 +108,19 @@ def translate(sourcecode, optimize_increment=False, optimize_pointer=False, opti
     if optimize_before_input:
         sourcecode = optimize_increments_before_input(sourcecode)
     if optimize_increment:
-        sourcecode = optimize_increments(sourcecode)
+        sourcecode = optimize_increments(sourcecode)  # Function definition needed
     if optimize_pointer:
-        sourcecode = optimize_pointers(sourcecode)
+        sourcecode = optimize_pointers(sourcecode)  # Function definition needed
     if optimize_not_executing_loops:
-        sourcecode = optimize_not_executing_loop(sourcecode)
+        sourcecode = optimize_not_executing_loop(sourcecode)  # Function definition needed
     if loops_after_clear_loops:
-        sourcecode = optimize_loops_after_clear_loop(sourcecode)
+        sourcecode = optimize_loops_after_clear_loop(sourcecode)  # Function definition needed
     if clear_loop_optimization:
         sourcecode = optimize_clear_loop(sourcecode)
     
     out = [
         "data = [0]*30000",
         "index = 0",
-        "output = ''",
         "def bf_add(x):",
         "    global index",
         "    data[index] = (data[index] + x) % 256",
@@ -133,7 +132,7 @@ def translate(sourcecode, optimize_increment=False, optimize_pointer=False, opti
         "    data[index] = 0",
         "def bf_output():",
         "    global index",
-        "    output += chr(data[index])",
+        "    print(chr(data[index]), end='')",
         "def bf_input():",
         "    global index",
         "    data[index] = ord(input())",
@@ -142,53 +141,58 @@ def translate(sourcecode, optimize_increment=False, optimize_pointer=False, opti
         "    data[index] = 0",
     ]
 
-    # Parsing and Translating the Brainfuck code
+    indent_level = 0
     i = 0
     while i < len(sourcecode):
         s = sourcecode[i]
+        indent = "    " * indent_level
+
         if s == '>':
             move = 1
-            while i + 1 < len(sourcecode) and sourcecode[i + 1] == '>':
+            while i + 1 < len(sourcecode) and sourcecode[i + 1] == '>' and optimize_pointer:
                 i += 1
                 move += 1
-            out.append(f"index += {move}")
+            out.append(indent + f"index += {move}")
         elif s == '<':
             move = 1
-            while i + 1 < len(sourcecode) and sourcecode[i + 1] == '<':
+            while i + 1 < len(sourcecode) and sourcecode[i + 1] == '<' and optimize_pointer:
                 i += 1
                 move += 1
-            out.append(f"index -= {move}")
+            out.append(indent + f"index -= {move}")
         elif s == '+':
             add = 1
-            while i + 1 < len(sourcecode) and sourcecode[i + 1] == '+':
+            while i + 1 < len(sourcecode) and sourcecode[i + 1] == '+' and optimize_increment:
                 i += 1
                 add += 1
-            out.append(f"bf_add({add})")
+            out.append(indent + f"bf_add({add})")
         elif s == '-':
             sub = 1
-            while i + 1 < len(sourcecode) and sourcecode[i + 1] == '-':
+            while i + 1 < len(sourcecode) and sourcecode[i + 1] == '-' and optimize_increment:
                 i += 1
                 sub += 1
-            out.append(f"bf_sub({sub})")
+            out.append(indent + f"bf_sub({sub})")
         elif s == "0":
-            out.append("zero_cell()")
+            out.append(indent + "zero_cell()")
         elif s == '.':
-            out.append("bf_output()")
+            out.append(indent + "bf_output()")
         elif s == ',':
-            out.append("bf_input()")
+            out.append(indent + "bf_input()")
         elif s == '[':
-            out.append("while data[index] != 0:")
+            out.append(indent + "while data[index] != 0:")
+            indent_level += 1
         elif s == ']':
-            out.append("# End of loop")
+            indent_level -= 1
+            indent = "    " * indent_level
+            out.append(indent + "# End of loop")
         i += 1
 
-    # Joining the code with new lines and returning
     return '\n'.join(out)
 
 # Example usage with optimizations enabled
-optimized_python_code = translate(">++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++."
-                                  "------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-]<+.",
-                                  optimize_increment=False, optimize_pointer=False, optimize_not_executing_loops=False, loops_after_clear_loops=False, clear_loop_optimization=False, optimize_before_input=False)
+with open("mandelbrot.b", 'r') as file:
+    sourcecode = file.read()
+
+optimized_python_code = translate(sourcecode,optimize_increment=True, optimize_pointer=True, optimize_not_executing_loops=False, loops_after_clear_loops=False, clear_loop_optimization=False, optimize_before_input=False)
 
 # Write the optimized Python code to a file
 with open("OptimizedOutput.py", "w", encoding="utf-8") as text_file:
