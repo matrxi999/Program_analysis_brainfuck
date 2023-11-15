@@ -1,0 +1,12 @@
+digraph {
+	graph [rankdir=LR]
+	A
+	B
+	C
+	D
+	A -> B
+	B -> C
+	C -> D
+	A [rank=same]
+	C [rank=same]
+}

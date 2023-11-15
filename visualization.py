@@ -1,52 +1,64 @@
 import graphviz
 
 def generate_graphviz_from_brainfuck(code):
-    dot = graphviz.Digraph()
-
-    dot.node("start", label="Start")
-    dot.node("end", label="End")
-
+    dot = graphviz.Digraph(engine='dot')  # Use the dot layout engine
+    current_y = 0
+    current_x = 0
+    node_count = 0
     loop_stack = []
-    current_node = "start"
+    dot.node(str(node_count), label="Start", pos=f"{current_x},{current_y}!")
+    node_count += 1
 
-    for idx, char in enumerate(code):
+    for char in code:
         if char == '+':
-            dot.node(f"add_{idx}", label="+")
-            dot.edge(current_node, f"add_{idx}")
-            current_node = f"add_{idx}"
+            current_y -= 1
+            dot.node(str(node_count), label="+", pos=f"{current_x},{current_y}!")
+            dot.edge(str(node_count - 1), str(node_count))
+            node_count += 1
         elif char == '-':
-            dot.node(f"subtract_{idx}", label="-")
-            dot.edge(current_node, f"subtract_{idx}")
-            current_node = f"subtract_{idx}"
+            current_y -= 1
+            dot.node(str(node_count), label="-", pos=f"{current_x},{current_y}!")
+            dot.edge(str(node_count - 1), str(node_count))
+            node_count += 1
         elif char == '.':
-            dot.node(f"output_{idx}", label="Output")
-            dot.edge(current_node, f"output_{idx}")
-            current_node = f"output_{idx}"
+            current_y -= 1
+            dot.node(str(node_count), label="Out", pos=f"{current_x},{current_y}!")
+            dot.edge(str(node_count - 1), str(node_count))
+            node_count += 1
         elif char == '>':
-            dot.node(f"move_right_{idx}", label=">")
-            dot.edge(current_node, f"move_right_{idx}")
-            current_node = f"move_right_{idx}"
+            current_x += 1
+            current_y -= 1
+            dot.node(str(node_count), label=">", pos=f"{current_x},{current_y}!")
+            dot.edge(str(node_count - 1), str(node_count))
+            node_count += 1
         elif char == '<':
-            dot.node(f"move_left_{idx}", label="<")
-            dot.edge(current_node, f"move_left_{idx}")
-            current_node = f"move_left_{idx}"
+            current_x -= 1
+            current_y -= 1
+            dot.node(str(node_count), label="<", pos=f"{current_x},{current_y}!")
+            dot.edge(str(node_count - 1), str(node_count))
+            node_count += 1
         elif char == '[':
-            dot.node(f"loop_start_{idx}", label="Loop Start")
-            dot.edge(current_node, f"loop_start_{idx}")
-            loop_stack.append((idx, f"loop_start_{idx}"))
-            current_node = f"loop_start_{idx}"
+            dot.node(str(node_count), label="[", pos=f"{current_x},{current_y}!")
+            dot.edge(str(node_count - 1), str(node_count))
+            loop_stack.append((node_count - 1, current_x))
+            node_count += 1
+            current_y -= 1
         elif char == ']':
-            start_idx, start_node = loop_stack.pop()
-            dot.node(f"loop_end_{idx}", label="Loop End")
-            dot.edge(current_node, f"loop_end_{idx}")
-            dot.edge(f"loop_end_{idx}", start_node)
-            current_node = f"loop_end_{idx}"
+            start_node, start_x = loop_stack.pop()
+            dot.node(str(node_count), label="]", pos=f"{current_x},{current_y}!")
+            dot.edge(str(node_count - 1), str(node_count))
+            dot.edge(str(node_count), str(start_node))
+            node_count += 1
+            current_y -= 1
+            current_x = start_x
 
-    dot.edge(current_node, "end")
+    dot.node(str(node_count), label="End", pos=f"{current_x},{current_y}!")
+    dot.edge(str(node_count - 1), str(node_count))
+
     return dot
 
 
 if __name__ == '__main__':
-    brainfuck_code = "++++++++++[>+++++++>++++[++++++>+++>]+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
+    brainfuck_code = "++[++.<+>.]+>"
     graph = generate_graphviz_from_brainfuck(brainfuck_code)
     graph.render('brainfuck_graph', format='png', cleanup=True)
