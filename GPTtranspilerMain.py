@@ -1,6 +1,8 @@
 def optimize_clear_loop(sourcecode):
-    """Optimize clear loop [-] in Brainfuck code."""
-    return sourcecode.replace('[-]', '0')  # Replace with '0' as a marker for clearing the cell
+    """Optimize clear loops [-] and [+] in Brainfuck code."""
+    optimized_code = sourcecode.replace('[-]', '0')  # Replace [-] with '0'
+    optimized_code = optimized_code.replace('[+]', '0')  # Replace [+] with '0'
+    return optimized_code
 
 def optimize_successive_loops(sourcecode):
     """Optimize successive loops in Brainfuck code."""
