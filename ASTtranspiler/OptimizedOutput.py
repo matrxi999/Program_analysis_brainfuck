@@ -12,13 +12,8 @@ def output():
 def input_():
     global index
     data[index] = ord(input())
-input_()
-index -= 2
-index += 2
-while data[index] != 0:
-    add(3)
-    subtract(5)
-    # End of loop
+add(5)
+data[index] = 0
 index += 1
 add(8)
 while data[index] != 0:

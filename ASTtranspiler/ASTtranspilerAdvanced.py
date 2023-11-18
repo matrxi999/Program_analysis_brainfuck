@@ -50,24 +50,30 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
     def optimize_arithmetic_commands(node, parent, index, indent):
         count = 0
         current_index = index
-        while current_index < len(parent.children) and parent.children[current_index].value == node.value:
-            count += 1 if node.value == '+' else -1
+        while current_index < len(parent.children) and parent.children[current_index].value in ['+', '-']:
+            count += 1 if parent.children[current_index].value == '+' else -1
             current_index += 1
+
         if count > 0:
             return indent + f"add({count})", current_index
         elif count < 0:
             return indent + f"subtract({-count})", current_index
+        return None, current_index
+
 
     def optimize_pointer_commands(node, parent, index, indent):
         count = 0
         current_index = index
-        while current_index < len(parent.children) and parent.children[current_index].value == node.value:
-            count += 1 if node.value == '>' else -1
+        while current_index < len(parent.children) and parent.children[current_index].value in ['<', '>']:
+            count += 1 if parent.children[current_index].value == '>' else -1
             current_index += 1
+
         if count > 0:
             return indent + f"index += {count}", current_index
         elif count < 0:
             return indent + f"index -= {-count}", current_index
+        return None, current_index
+
 
     def optimize_clear_loop(node, indent):
         # Check if the node represents a '[-]' pattern
