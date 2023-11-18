@@ -1,0 +1,42 @@
+
+digraph ast {
+    node [shape=box];
+
+    // Define nodes
+    cmd1 [label=">"];
+    cmd2 [label="++++++++"];
+    loop1 [label="Loop [..]"];
+    loop1_cmd1 [label="<"];
+    loop1_cmd2 [label="+++++++++"];
+    loop1_cmd3 [label=">"];
+    loop1_cmd4 [label="-"];
+    cmd3 [label="<."];
+    cmd4 [label=">++++"];
+    loop2 [label="Loop [..]"];
+    loop2_cmd1 [label="<"];
+    loop2_cmd2 [label="+++++++"];
+    loop2_cmd3 [label=">"];
+    loop2_cmd4 [label="-"];
+    cmd5 [label="<+."];
+    // ... Continue for other commands and loops
+
+    // Define edges
+    cmd1 -> cmd2;
+    cmd2 -> loop1;
+    loop1 -> loop1_cmd1;
+    loop1_cmd1 -> loop1_cmd2;
+    loop1_cmd2 -> loop1_cmd3;
+    loop1_cmd3 -> loop1_cmd4;
+    loop1_cmd4 -> loop1;
+    loop1 -> cmd3;
+    cmd3 -> cmd4;
+    cmd4 -> loop2;
+    loop2 -> loop2_cmd1;
+    loop2_cmd1 -> loop2_cmd2;
+    loop2_cmd2 -> loop2_cmd3;
+    loop2_cmd3 -> loop2_cmd4;
+    loop2_cmd4 -> loop2;
+    loop2 -> cmd5;
+    // ... Continue connections for other commands and loops
+}
+
