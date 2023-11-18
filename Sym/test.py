@@ -5,10 +5,8 @@ def main():
     pointer = 0
     
     tape[0] = 1
-    tape[1] = 1
-    sys.stdout.write(chr(tape[0]))
+    print(chr(tape[0]), end='')
     tape[0] = 1
-    tape[1] = 1
     
     print()  # New line after program execution
 
