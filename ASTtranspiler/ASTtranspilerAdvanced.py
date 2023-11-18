@@ -8,11 +8,27 @@ def delete_first_unexecutable_loop(ast):
         if node.kind == "loop_start":
             # Found a loop that hasn't been preceded by a modifying command, remove it
             ast.children.remove(node)
-            return
+            return delete_first_unexecutable_loop(ast)
+        
+def remove_redundant_sequences_before_input(ast):
+    i = 0
+    while i < len(ast.children):
+        if ast.children[i].kind == "command" and ast.children[i].value == ',':
+            # Find and remove all preceding '+' and '-' commands
+            j = i - 1
+            while j >= 0 and ast.children[j].kind == "command" and ast.children[j].value in ['+', '-']:
+                del ast.children[j]
+                j -= 1
+                i -= 1  # Adjust the index since we're removing elements
+        i += 1
 
-def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_clear_loops=False, optimize_consecutive_loops=False, delete_first_loop=False):
+
+def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_clear_loops=False, optimize_consecutive_loops=False, delete_first_loop=False, remove_redundant_sequences=False):
     if delete_first_loop:
         delete_first_unexecutable_loop(ast)
+
+    if remove_redundant_sequences:
+        remove_redundant_sequences_before_input(ast)
 
     out = [
         "data = [0]*30000",
@@ -123,7 +139,7 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
     return '\n'.join(out)
 
 
-optimized_python_code = translate_from_ast(ast, optimize_arithmetic=True, optimize_pointer=True, optimize_consecutive_loops=True, optimize_clear_loops=True, delete_first_loop=True)
+optimized_python_code = translate_from_ast(ast, optimize_arithmetic=True, optimize_pointer=True, optimize_consecutive_loops=True, optimize_clear_loops=True, delete_first_loop=True, remove_redundant_sequences=True)
 
 # Write the optimized Python code to a file
 with open("ASTtranspiler/OptimizedOutput.py", "w", encoding="utf-8") as text_file:
