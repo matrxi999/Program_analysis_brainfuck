@@ -52,16 +52,27 @@ def translate_from_ast(ast, optimize_consecutive_operations=False):
         return indent + command_translations.get(node.value, "")
 
     def translate_optimized_command(node, parent, index, indent):
-        if node.value in ['+', '-']:
+        command = node.value
+        if command in ['+', '-', '<', '>'] and optimize_consecutive_operations:
             count = 0
             current_index = index
-            while current_index < len(parent.children) and parent.children[current_index].value == node.value:
-                count += 1 if parent.children[current_index].value == '+' else -1
+            while current_index < len(parent.children) and parent.children[current_index].value == command:
+                if command in ['+', '>']:
+                    count += 1
+                else:  # '-', '<'
+                    count -= 1
                 current_index += 1
-            if count > 0:
-                return indent + f"add({count})", current_index
-            elif count < 0:
-                return indent + f"subtract({-count})", current_index
+
+            if command in ['+', '-']:
+                if count > 0:
+                    return indent + f"add({count})", current_index
+                elif count < 0:
+                    return indent + f"subtract({-count})", current_index
+            elif command in ['<', '>']:
+                if count > 0:
+                    return indent + f"index += {count}", current_index
+                elif count < 0:
+                    return indent + f"index -= {-count}", current_index
         else:
             return translate_command(node, indent), index + 1
 
