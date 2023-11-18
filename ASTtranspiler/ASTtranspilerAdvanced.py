@@ -51,15 +51,12 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
 
 
     def optimize_consecutive_loop(node, parent, index):
-        # If the current node is a loop, check if the next node is also a loop
         if node.kind == "loop_start":
             current_index = index + 1
             while current_index < len(parent.children) and parent.children[current_index].kind == "loop_start":
-                # Skip the next loop
                 current_index += 1
-            return current_index
+            return current_index - 1
         return index + 1
-
 
     def translate_node(node, parent, index, indent_level=0, optimize_clear_loops=False, optimize_consecutive_loops=False):
         indent = "    " * indent_level
@@ -114,7 +111,7 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
     return '\n'.join(out)
 
 
-optimized_python_code = translate_from_ast(ast, optimize_arithmetic=True, optimize_pointer=True, optimize_consecutive_loops=False, optimize_clear_loops=True)
+optimized_python_code = translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_consecutive_loops=False, optimize_clear_loops=False)
 
 # Write the optimized Python code to a file
 with open("ASTtranspiler/OptimizedOutput.py", "w", encoding="utf-8") as text_file:
