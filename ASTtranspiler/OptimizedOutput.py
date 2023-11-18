@@ -12,128 +12,53 @@ def output():
 def input_():
     global index
     data[index] = ord(input())
-while data[index] != 0:
-    subtract(1)
-    # End of loop
-while data[index] != 0:
-    add(1)
-    # End of loop
-while data[index] != 0:
-    add(1)
-    # End of loop
+index -= 2
+index += 2
+data[index] = 0
 index += 1
-add(1)
-add(1)
-add(1)
-add(1)
-add(1)
-add(1)
-add(1)
-add(1)
+add(8)
 while data[index] != 0:
     index -= 1
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
+    add(9)
     index += 1
     subtract(1)
     # End of loop
 index -= 1
 output()
 index += 1
-add(1)
-add(1)
-add(1)
-add(1)
+add(4)
 while data[index] != 0:
     index -= 1
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
+    add(7)
     index += 1
     subtract(1)
     # End of loop
 index -= 1
 add(1)
 output()
-add(1)
-add(1)
-add(1)
-add(1)
-add(1)
-add(1)
-add(1)
+add(7)
 output()
 output()
-add(1)
-add(1)
-add(1)
+add(3)
 output()
-index += 1
-index += 1
-add(1)
-add(1)
-add(1)
-add(1)
-add(1)
-add(1)
+index += 2
+add(6)
 while data[index] != 0:
     index -= 1
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
+    add(7)
     index += 1
     subtract(1)
     # End of loop
 index -= 1
-add(1)
-add(1)
+add(2)
 output()
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
+subtract(12)
 output()
 index += 1
-add(1)
-add(1)
-add(1)
-add(1)
-add(1)
-add(1)
+add(6)
 while data[index] != 0:
     index -= 1
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
+    add(9)
     index += 1
     subtract(1)
     # End of loop
@@ -142,43 +67,17 @@ add(1)
 output()
 index -= 1
 output()
-add(1)
-add(1)
-add(1)
+add(3)
 output()
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
+subtract(6)
 output()
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
-subtract(1)
+subtract(8)
 output()
-index += 1
-index += 1
-index += 1
-add(1)
-add(1)
-add(1)
-add(1)
+index += 3
+add(4)
 while data[index] != 0:
     index -= 1
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
-    add(1)
+    add(8)
     index += 1
     subtract(1)
     # End of loop

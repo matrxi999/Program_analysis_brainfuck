@@ -1,7 +1,19 @@
 from ASTgenerator import ast
 
+def delete_first_unexecutable_loop(ast):
+    for node in ast.children:
+        if node.kind == "command" and node.value in ['+', '-', ',']:
+            # Found a modifying command before any loop, no optimization possible
+            return
+        if node.kind == "loop_start":
+            # Found a loop that hasn't been preceded by a modifying command, remove it
+            ast.children.remove(node)
+            return
 
-def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_clear_loops=False, optimize_consecutive_loops=False):
+def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_clear_loops=False, optimize_consecutive_loops=False, delete_first_loop=False):
+    if delete_first_loop:
+        delete_first_unexecutable_loop(ast)
+
     out = [
         "data = [0]*30000",
         "index = 0",
@@ -111,7 +123,7 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
     return '\n'.join(out)
 
 
-optimized_python_code = translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_consecutive_loops=False, optimize_clear_loops=False)
+optimized_python_code = translate_from_ast(ast, optimize_arithmetic=True, optimize_pointer=True, optimize_consecutive_loops=True, optimize_clear_loops=True, delete_first_loop=True)
 
 # Write the optimized Python code to a file
 with open("ASTtranspiler/OptimizedOutput.py", "w", encoding="utf-8") as text_file:
