@@ -87,5 +87,5 @@ print_ast(ast)
 
 # Generate DOT output
 dot_output = generate_dot(ast)
-with open("generatedFiles/ASTtranspiler/ASTgraphOptimized.dot", "w", encoding="utf-8") as text_file:
+with open("ASTtranspiler/generatedFiles/ASTgraphOptimized.dot", "w", encoding="utf-8") as text_file:
     text_file.write(dot_output)
