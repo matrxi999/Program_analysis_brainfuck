@@ -74,6 +74,12 @@ index -= 1
 index -= 1
 while data[index] != 0:
     subtract(1)
+    while data[index] != 0:
+        subtract(1)
+        index += 1
+        add(1)
+        index -= 1
+        # End of loop
     index += 1
     while data[index] != 0:
         subtract(1)
@@ -114,6 +120,12 @@ while data[index] != 0:
             output()
             index -= 1
             index -= 1
+            while data[index] != 0:
+                subtract(1)
+                index += 1
+                add(1)
+                index -= 1
+                # End of loop
             add(1)
             index += 1
             while data[index] != 0:
@@ -148,6 +160,12 @@ while data[index] != 0:
     index -= 1
     while data[index] != 0:
         subtract(1)
+        while data[index] != 0:
+            subtract(1)
+            index += 1
+            add(1)
+            index -= 1
+            # End of loop
         add(1)
         index += 1
         while data[index] != 0:
@@ -158,6 +176,12 @@ while data[index] != 0:
             index += 1
             index += 1
             subtract(1)
+            while data[index] != 0:
+                subtract(1)
+                index += 1
+                add(1)
+                index -= 1
+                # End of loop
             add(1)
             add(1)
             index += 1

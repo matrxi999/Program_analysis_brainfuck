@@ -145,7 +145,7 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
             return current_index - 1
         return index + 1
 
-    def translate_node(node, parent, index, indent_level=0, optimize_clear_loops=False, optimize_consecutive_loops=False):
+    def translate_node(node, parent, index, indent_level=0, optimize_clear_loops=False, optimize_consecutive_loops=False, copy_loop_optimization=False):
         indent = "    " * indent_level
         global detected
         if node.kind == "command" and not detected:
@@ -161,7 +161,8 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
                     out.append(command_translation)
                 return next_index
         elif node.kind == "loop_start":
-            detected, new_index, transpiled_code = detect_special_loop(node, index)
+            if copy_loop_optimization:
+                detected, new_index, transpiled_code = detect_special_loop(node, index)
             if detected and copy_loop_optimization:
                 out.extend([indent + line for line in transpiled_code])
                 
@@ -203,13 +204,13 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
 
     child_index = 0
     while child_index < len(ast.children):
-        child_index = translate_node(ast.children[child_index], ast, child_index, 0, optimize_clear_loops, optimize_consecutive_loops)
+        child_index = translate_node(ast.children[child_index], ast, child_index, 0, optimize_clear_loops, optimize_consecutive_loops,copy_loop_optimization)
 
     return '\n'.join(out) + '\n' + "end = time.time()" + '\n' + "print(end - start)"
 
 
-optimized_python_code = translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_consecutive_loops=False, optimize_clear_loops=False, delete_first_loop=False, remove_redundant_sequences=False, copy_loop_optimization=False)
+optimized_python_code = translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_consecutive_loops=False, optimize_clear_loops=False, delete_first_loop=False, remove_redundant_sequences=False, copy_loop_optimization=True)
 
 # Write the optimized Python code to a file
-with open("ASTtranspiler/OptimizedOutput.py", "w", encoding="utf-8") as text_file:
+with open("Program_analysis_brainfuck\ASTtranspiler/OptimizedOutput.py", "w", encoding="utf-8") as text_file:
     text_file.write(optimized_python_code)
