@@ -23,7 +23,9 @@ def remove_redundant_sequences_before_input(ast):
         i += 1
 
 
-def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_clear_loops=False, optimize_consecutive_loops=False, delete_first_loop=False, remove_redundant_sequences=False):
+
+
+def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_clear_loops=False, optimize_consecutive_loops=False, delete_first_loop=False, remove_redundant_sequences=False, copy_loop_optimization=False):
     if delete_first_loop:
         delete_first_unexecutable_loop(ast)
 
@@ -74,6 +76,54 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
             return indent + f"index -= {-count}", current_index
         return None, current_index
 
+    def detect_special_loop(node, index):
+        """
+        Detects loops with the pattern [->+>+<<] and generates the transpiled output.
+
+        Args:
+        - node: The loop node to check.
+        - index: The current data pointer index.
+
+        Returns:
+        - A tuple (detected, new_index, transpiled_code) where:
+            'detected' is a boolean indicating if the pattern was detected.
+            'new_index' is the index at which the loop ends.
+            'transpiled_code' is the list of strings representing the Python code if detected.
+        - (False, index, None) otherwise.
+        """
+
+        children = node.children
+        # The first command should be a single '-'
+        if not (len(children) > 2 and children[0].kind == "command" and children[0].value == '-'):
+            return False, index, None
+        
+        steps = 0
+        # Loop through the commands looking for '>+' pairs
+        for i in range(1, len(children) - 1, 2):
+            if (children[i].kind == "command" and children[i].value == '>' and
+                    children[i + 1].kind == "command" and children[i + 1].value == '+'):
+                steps += 1
+            else:
+                break  # Stop if any other pattern is found
+        
+        # Check if the number of '<' commands equals the steps
+        if all(child.kind == "command" and child.value == '<' for child in children[-steps:-1]):
+            # Detected the loop pattern, generate transpiled code
+            transpiled_code = [
+                f"temp = data[{index}]",
+                f"data[{index}] = 0"
+            ]
+            new_index = index
+            for _ in range(steps):
+                new_index += 1
+                transpiled_code.append(f"data[{new_index}] = temp")
+            new_index -= steps  # Move the index back to the original position
+
+            return True, new_index, transpiled_code
+
+        return False, index, None
+
+
 
     def optimize_clear_loop(node, indent):
         # Check if the node represents a '[-]' pattern
@@ -107,6 +157,11 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
                     out.append(command_translation)
                 return next_index
         elif node.kind == "loop_start":
+            detected, new_index, transpiled_code = detect_special_loop(node, index)
+            if detected and copy_loop_optimization:
+                out.extend([indent + line for line in transpiled_code])
+                index = new_index  # Update index after processing the special loop
+            
             # Apply consecutive loop optimization
             if optimize_consecutive_loops:
                 index = optimize_consecutive_loop(node, parent, index)
@@ -145,7 +200,7 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
     return '\n'.join(out)
 
 
-optimized_python_code = translate_from_ast(ast, optimize_arithmetic=True, optimize_pointer=True, optimize_consecutive_loops=True, optimize_clear_loops=True, delete_first_loop=True, remove_redundant_sequences=True)
+optimized_python_code = translate_from_ast(ast, optimize_arithmetic=True, optimize_pointer=True, optimize_consecutive_loops=True, optimize_clear_loops=True, delete_first_loop=False, remove_redundant_sequences=True, copy_loop_optimization=True)
 
 # Write the optimized Python code to a file
 with open("ASTtranspiler/OptimizedOutput.py", "w", encoding="utf-8") as text_file:

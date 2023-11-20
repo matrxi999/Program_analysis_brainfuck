@@ -12,27 +12,35 @@ def output():
 def input_():
     global index
     data[index] = ord(input())
-add(5)
-data[index] = 0
-index += 1
-add(8)
+temp = data[0]
+data[0] = 0
+data[1] = temp
+data[2] = temp
 while data[index] != 0:
-    index -= 1
-    add(9)
-    index += 1
     subtract(1)
+    index += 1
+    add(1)
+    index += 1
+    add(1)
+    index -= 2
     # End of loop
-index -= 1
-output()
-index += 1
-add(4)
+add(10)
 while data[index] != 0:
-    index -= 1
+    index += 1
     add(7)
     index += 1
+    add(10)
+    index += 1
+    add(3)
+    index += 1
+    add(1)
+    index -= 4
     subtract(1)
     # End of loop
-index -= 1
+index += 1
+add(2)
+output()
+index += 1
 add(1)
 output()
 add(7)
@@ -40,31 +48,13 @@ output()
 output()
 add(3)
 output()
-index += 2
-add(6)
-while data[index] != 0:
-    index -= 1
-    add(7)
-    index += 1
-    subtract(1)
-    # End of loop
-index -= 1
+index += 1
 add(2)
 output()
-subtract(12)
+index -= 2
+add(15)
 output()
 index += 1
-add(6)
-while data[index] != 0:
-    index -= 1
-    add(9)
-    index += 1
-    subtract(1)
-    # End of loop
-index -= 1
-add(1)
-output()
-index -= 1
 output()
 add(3)
 output()
@@ -72,14 +62,8 @@ subtract(6)
 output()
 subtract(8)
 output()
-index += 3
-add(4)
-while data[index] != 0:
-    index -= 1
-    add(8)
-    index += 1
-    subtract(1)
-    # End of loop
-index -= 1
+index += 1
 add(1)
+output()
+index += 1
 output()
