@@ -1,4 +1,4 @@
-from Eval.batch_performance_brainfuck_tester import test_brainfuck_files
+from batch_performance_brainfuck_tester import test_brainfuck_files
 from stats_eval_results import students_t_test, transform_to_log
 from visualize_performance_results import plot_comparison
 
