@@ -113,13 +113,13 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
         if all(child.kind == "command" and child.value == '<' for child in children[-steps:-1]) and len(children) == (1+steps*2+steps+1):
             # Detected the loop pattern, generate transpiled code
             transpiled_code = [
-                f"temp = data[{index}]",
-                f"data[{index}] = 0"
+                f"temp = data[index]",
+                f"data[index] = 0"
             ]
             new_index = index
             for _ in range(steps):
                 new_index += 1
-                transpiled_code.append(f"data[{new_index}] = temp")
+                transpiled_code.append(f"data[index + {_+1}] = temp")
             new_index -= steps  # Move the index back to the original position
 
             return True, new_index, transpiled_code
