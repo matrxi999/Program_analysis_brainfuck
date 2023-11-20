@@ -16,14 +16,6 @@ temp = data[0]
 data[0] = 0
 data[1] = temp
 data[2] = temp
-while data[index] != 0:
-    subtract(1)
-    index += 1
-    add(1)
-    index += 1
-    add(1)
-    index -= 2
-    # End of loop
 add(10)
 while data[index] != 0:
     index += 1

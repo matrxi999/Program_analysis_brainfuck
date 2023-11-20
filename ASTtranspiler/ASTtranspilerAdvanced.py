@@ -1,4 +1,5 @@
 from ASTgenerator import ast
+detected = False
 
 def delete_first_unexecutable_loop(ast):
     for node in ast.children:
@@ -144,7 +145,8 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
 
     def translate_node(node, parent, index, indent_level=0, optimize_clear_loops=False, optimize_consecutive_loops=False):
         indent = "    " * indent_level
-        if node.kind == "command":
+        global detected
+        if node.kind == "command" and not detected:
             if node.kind == "command":
                 if optimize_arithmetic and node.value in ['+', '-']:
                     command_translation, next_index = optimize_arithmetic_commands(node, parent, index, indent)
@@ -160,6 +162,7 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
             detected, new_index, transpiled_code = detect_special_loop(node, index)
             if detected and copy_loop_optimization:
                 out.extend([indent + line for line in transpiled_code])
+                
                 index = new_index  # Update index after processing the special loop
             
             # Apply consecutive loop optimization
@@ -173,14 +176,17 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
                     out.append(clear_loop_translation)
                     return index + 1  # Skip the clear loop
 
-            out.append(indent + "while data[index] != 0:")
+            if not detected: out.append(indent + "while data[index] != 0:")
             child_index = 0
             while child_index < len(node.children):
                 child_index = translate_node(node.children[child_index], node, child_index, indent_level + 1, optimize_clear_loops, optimize_consecutive_loops)
             return index + 1
         elif node.kind == "loop_end":
-            out.append(indent + "# End of loop")
+            if not detected: out.append(indent + "# End of loop")
+            detected = False
             return index + 1
+        else:
+            return index+1
     
     def translate_command(node, indent):
         command_translations = {
@@ -200,7 +206,7 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
     return '\n'.join(out)
 
 
-optimized_python_code = translate_from_ast(ast, optimize_arithmetic=True, optimize_pointer=True, optimize_consecutive_loops=True, optimize_clear_loops=True, delete_first_loop=False, remove_redundant_sequences=True, copy_loop_optimization=True)
+optimized_python_code = translate_from_ast(ast, optimize_arithmetic=True, optimize_pointer=True, optimize_consecutive_loops=False, optimize_clear_loops=True, delete_first_loop=False, remove_redundant_sequences=True, copy_loop_optimization=True)
 
 # Write the optimized Python code to a file
 with open("ASTtranspiler/OptimizedOutput.py", "w", encoding="utf-8") as text_file:
