@@ -34,6 +34,8 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
         remove_redundant_sequences_before_input(ast)
 
     out = [
+        "import time",
+        "start = time.time()",
         "data = [0]*30000",
         "index = 0",
         "def add(x):",
@@ -203,10 +205,10 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
     while child_index < len(ast.children):
         child_index = translate_node(ast.children[child_index], ast, child_index, 0, optimize_clear_loops, optimize_consecutive_loops)
 
-    return '\n'.join(out)
+    return '\n'.join(out) + '\n' + "end = time.time()" + '\n' + "print(end - start)"
 
 
-optimized_python_code = translate_from_ast(ast, optimize_arithmetic=True, optimize_pointer=True, optimize_consecutive_loops=False, optimize_clear_loops=True, delete_first_loop=False, remove_redundant_sequences=True, copy_loop_optimization=True)
+optimized_python_code = translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_consecutive_loops=False, optimize_clear_loops=False, delete_first_loop=False, remove_redundant_sequences=False, copy_loop_optimization=True)
 
 # Write the optimized Python code to a file
 with open("ASTtranspiler/OptimizedOutput.py", "w", encoding="utf-8") as text_file:
