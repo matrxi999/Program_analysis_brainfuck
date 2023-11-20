@@ -108,9 +108,9 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
                 steps += 1
             else:
                 break  # Stop if any other pattern is found
-        
+
         # Check if the number of '<' commands equals the steps
-        if all(child.kind == "command" and child.value == '<' for child in children[-steps:-1]):
+        if all(child.kind == "command" and child.value == '<' for child in children[-steps:-1]) and len(children) == (1+steps*2+steps+1):
             # Detected the loop pattern, generate transpiled code
             transpiled_code = [
                 f"temp = data[{index}]",
@@ -208,7 +208,7 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
     return '\n'.join(out) + '\n' + "end = time.time()" + '\n' + "print(end - start)"
 
 
-optimized_python_code = translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_consecutive_loops=False, optimize_clear_loops=False, delete_first_loop=False, remove_redundant_sequences=False, copy_loop_optimization=True)
+optimized_python_code = translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_consecutive_loops=False, optimize_clear_loops=False, delete_first_loop=False, remove_redundant_sequences=False, copy_loop_optimization=False)
 
 # Write the optimized Python code to a file
 with open("ASTtranspiler/OptimizedOutput.py", "w", encoding="utf-8") as text_file:

@@ -46,7 +46,7 @@ def print_ast(node, indent=0):
         print_ast(child, indent + 1)
 
 # Example usage
-code = """>    
+code = """ >    
                                + +    
                               +   +    
                              [ < + +    
@@ -76,7 +76,7 @@ code = """>
      - < + >         > > - [         - > + <         ] + + >    
     [       -       <       -       >       ]       <       <    
    < ]     < <     < <     ] +     + +     + +     + +     + +    
-  +   .   +   +   +   .   [   -   ]   <   ]   +   +   +   +   +"""
+  +   .   +   +   +   .   [   -   ]   <   ]   +   +   +   +   +  """
 parser = BrainfuckParser(code)
 ast = parser.parse()
 print_ast(ast)
