@@ -132,6 +132,7 @@ class BrainfuckSymbolicSolver:
                 index = self.execute_loops(char, index, code)
             elif char == ']':
                 index = self.execute_loops(char, index, code)
+            elif char == '.':
                 #optimized_code += self.apply_optimizations()
                 had_to_trans = True
                 optimized_code += f"print(chr(tape[{self.pointer}]), end='')\n"
