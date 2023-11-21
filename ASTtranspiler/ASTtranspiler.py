@@ -191,7 +191,7 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
             if not detected: out.append(indent + "while data[index] != 0:")
             child_index = 0
             while child_index < len(node.children):
-                child_index = translate_node(node.children[child_index], node, child_index, indent_level + 1, optimize_clear_loops, optimize_consecutive_loops)
+                child_index = translate_node(node.children[child_index], node, child_index, indent_level + 1, optimize_clear_loops, optimize_consecutive_loops, copy_loop_optimization)
             return index + 1
         elif node.kind == "loop_end":
             if not detected: out.append(indent + "# End of loop")
@@ -213,13 +213,13 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
 
     child_index = 0
     while child_index < len(ast.children):
-        child_index = translate_node(ast.children[child_index], ast, child_index, 0, optimize_clear_loops, optimize_consecutive_loops,copy_loop_optimization)
+        child_index = translate_node(ast.children[child_index], ast, child_index, 0, optimize_clear_loops, optimize_consecutive_loops, copy_loop_optimization)
 
     return '\n'.join(out) + '\n' + "end = time.time()" + '\n' + "print(end - start)"
 
 
-optimized_python_code = translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_consecutive_loops=False, optimize_clear_loops=False, delete_first_loop=False, remove_redundant_sequences=False, copy_loop_optimization=True)
+optimized_python_code = translate_from_ast(ast, optimize_arithmetic=True, optimize_pointer=True, optimize_consecutive_loops=False, optimize_clear_loops=True, delete_first_loop=False, remove_redundant_sequences=True, copy_loop_optimization=True)
 
 # Write the optimized Python code to a file
-with open("Program_analysis_brainfuck\ASTtranspiler/OptimizedOutput.py", "w", encoding="utf-8") as text_file:
+with open("ASTtranspiler/OptimizedOutput.py", "w", encoding="utf-8") as text_file:
     text_file.write(optimized_python_code)

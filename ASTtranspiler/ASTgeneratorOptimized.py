@@ -69,18 +69,14 @@ def generate_dot(ast):
 
 # Example usage
 python_code = """
-add(5)
-data[index] = 0
-index += 1
-add(8)
+add(2)
 while data[index] != 0:
-    index -= 1
-    add(9)
-    index += 1
-    subtract(1)
+    add(1)
+    temp = data[index]
+    data[index] = 0
+    data[index + 1] = temp
     # End of loop
-index -= 1
-output()
+subtract(2)
 """
 
 parser = PythonParser(python_code)

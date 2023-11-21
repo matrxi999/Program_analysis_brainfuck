@@ -48,37 +48,7 @@ def print_ast(node, indent=0):
         print_ast(child, indent + 1)
 
 # Example usage
-code = """>    
-                               + +    
-                              +   +    
-                             [ < + +    
-                            +       +    
-                           + +     + +    
-                          >   -   ]   >    
-                         + + + + + + + +    
-                        [               >    
-                       + +             + +    
-                      <   -           ]   >    
-                     > + + >         > > + >    
-                    >       >       +       <    
-                   < <     < <     < <     < <    
-                  <   [   -   [   -   >   +   <    
-                 ] > [ - < + > > > . < < ] > > >    
-                [                               [    
-               - >                             + +    
-              +   +                           +   +    
-             + + [ >                         + + + +    
-            <       -                       ]       >    
-           . <     < [                     - >     + <    
-          ]   +   >   [                   -   >   +   +    
-         + + + + + + + +                 < < + > ] > . [    
-        -               ]               >               ]    
-       ] +             < <             < [             - [    
-      -   >           +   <           ]   +           >   [    
-     - < + >         > > - [         - > + <         ] + + >    
-    [       -       <       -       >       ]       <       <    
-   < ]     < <     < <     ] +     + +     + +     + +     + +    
-  +   .   +   +   +   .   [   -   ]   <   ]   +   +   +   +   +  """
+code = """++[+[->+<]]--"""
 parser = BrainfuckParser(code)
 ast = parser.parse()
 print_ast(ast)
@@ -109,5 +79,5 @@ def generate_dot(ast):
 
 # Generate DOT output
 dot_output = generate_dot(ast)
-with open("Program_analysis_brainfuck\ASTtranspiler\generatedFiles\ASTgraph.dot", "w", encoding="utf-8") as text_file:
+with open("ASTtranspiler\generatedFiles\ASTgraph.dot", "w", encoding="utf-8") as text_file:
     text_file.write(dot_output)
