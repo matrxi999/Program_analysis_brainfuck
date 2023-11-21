@@ -132,55 +132,6 @@ class BrainfuckSymbolicSolver:
         optimized_code += self.apply_optimizations()
         return optimized_code
 
-    def extract_loop_operations(self, code, start_index):
-        operations = []
-        loop_stack = []
-        index = start_index + 1  # Start after the opening '['
-
-        while index < len(code):
-            char = code[index]
-
-            if char == '[':
-                loop_stack.append(index)
-                operations.append(char)  # Include '[' to keep track of nested loops
-            elif char == ']':
-                if loop_stack:
-                    loop_stack.pop()
-                    operations.append(char)  # Include ']' to close nested loops
-                    if not loop_stack:
-                        # End of the current loop
-                        break
-                else:
-                    break  # This would be an error in Brainfuck code
-            else:
-                operations.append(char)
-
-            index += 1
-
-        return operations, index
-
-    def compute_net_effects(self, loop_operations):
-        net_effects = {}
-        pointer_position = 0
-
-        for op in loop_operations:
-            if op == '>':
-                pointer_position += 1
-            elif op == '<':
-                pointer_position -= 1
-            elif op == '+':
-                if pointer_position not in net_effects:
-                    net_effects[pointer_position] = 0
-                net_effects[pointer_position] += 1
-                self.execute_command()
-
-            elif op == '-':
-                if pointer_position not in net_effects:
-                    net_effects[pointer_position] = 0
-                net_effects[pointer_position] -= 1
-
-        return net_effects
-
     def apply_optimizations(self):
         optimized_code = ""
         for pointer, symbolic_value in self.symbolic_state.items():
