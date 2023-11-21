@@ -80,12 +80,6 @@ class BrainfuckSymbolicSolver:
             else:
                 self.loop_stack.append(self.pointer)
                 return index
-        elif isinstance(self.tape[self.pointer], SymbolicValue):
-            if self.tape[self.pointer].get_concrete_val() == 0:
-                return loop_end  # Go to loop end
-            else:
-                self.loop_stack.append(self.pointer)
-                return index
 
     def handle_loop_end(self, index, loop_start):
         if isinstance(self.tape[self.pointer], int):
@@ -95,13 +89,7 @@ class BrainfuckSymbolicSolver:
             else:
                 self.loop_stack.pop()
                 return index
-        elif isinstance(self.tape[self.pointer], SymbolicValue):
-            if self.tape[self.pointer].get_concrete_val() != 0:
-                self.pointer = self.loop_stack[-1]
-                return loop_start
-            else:
-                self.loop_stack.pop()
-                return index
+
     def execute_command(self, char):
         # Execute a single Brainfuck command
         if char == '>':
