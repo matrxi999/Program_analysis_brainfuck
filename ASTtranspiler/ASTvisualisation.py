@@ -1,6 +1,8 @@
 from graphviz import Source
 import os
 
+# Script to visualise unoptimized AST
+
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin/'
 
 with open("ASTtranspiler/generatedFiles/ASTgraph.dot", 'r') as file:

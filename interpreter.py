@@ -1,65 +1,64 @@
-import sys
+def execute_brainfuck(program_code):
+    memory_cells = [0]
+    memory_pointer = 0
+    program_pointer = 0
 
-f = open("brainfuck.txt", "r")
-prg = f.read()
-f.close()
+    while program_pointer < len(program_code):
+        command = program_code[program_pointer]
 
-prgPos = 0
+        if command == ">":
+            memory_pointer += 1
+            if len(memory_cells) <= memory_pointer:
+                memory_cells.append(0)
 
-mem = [0]
-memPos = 0
+        elif command == "<":
+            memory_pointer -= 1
+            if memory_pointer < 0:
+                print("Error: Moved off memory cells array!")
 
-while prgPos < len(prg):
-    if prg[prgPos] == ">":
-        memPos += 1
-        if len(mem) <= memPos:
-            mem.append(0)
+        elif command == "+":
+            memory_cells[memory_pointer] = (memory_cells[memory_pointer] + 1) % 256
 
-    elif prg[prgPos] == "<":
-        memPos -= 1
-        if memPos < 0:
-            print("Error: Moved off tape!")
+        elif command == "-":
+            memory_cells[memory_pointer] = (memory_cells[memory_pointer] - 1) % 256
 
-    elif prg[prgPos] == "+":
-        mem[memPos] += 1
-        if mem[memPos] >= 256:
-            mem[memPos] = 0
+        elif command == ".":
+            print(chr(memory_cells[memory_pointer]), end="")
 
-    elif prg[prgPos] == "-":
-        mem[memPos] -= 1
-        if mem[memPos] <= -1:
-            mem[memPos] = 255
+        elif command == ",":
+            user_input = input("Input requested: ")
+            memory_cells[memory_pointer] = ord(user_input[0])
 
-    elif prg[prgPos] == ".":
-        print(chr(mem[memPos]), end="")
+        elif command == "[":
+            if memory_cells[memory_pointer] == 0:
+                opened_count = 0
+                program_pointer += 1
+                while program_pointer < len(program_code):
+                    if program_code[program_pointer] == "]" and opened_count == 0:
+                        break
+                    elif program_code[program_pointer] == "[":
+                        opened_count += 1
+                    elif program_code[program_pointer] == "]":
+                        opened_count -= 1
+                    program_pointer += 1
 
-    elif prg[prgPos] == ",":
-        inp = input("Input requested: ")
-        mem[memPos] = ord(inp[0])
+        elif command == "]":
+            if memory_cells[memory_pointer] != 0:
+                closed_count = 0
+                program_pointer -= 1
+                while program_pointer >= 0:
+                    if program_code[program_pointer] == "[" and closed_count == 0:
+                        break
+                    elif program_code[program_pointer] == "]":
+                        closed_count += 1
+                    elif program_code[program_pointer] == "[":
+                        closed_count -= 1
+                    program_pointer -= 1
 
-    elif prg[prgPos] == "[":
-        if mem[memPos] == 0:
-            countOpened = 0
-            prgPos += 1
-            while prgPos < len(prg):
-                if prg[prgPos] == "]" and countOpened == 0:
-                    break
-                elif prg[prgPos] == "[":
-                    countOpened += 1
-                elif prg[prgPos] == "]":
-                    countOpened -= 1
-                prgPos += 1
+        program_pointer += 1
 
-    elif prg[prgPos] == "]":
-        if mem[memPos] != 0:
-            countClosed = 0
-            prgPos -= 1
-            while prgPos >= 0:
-                if prg[prgPos] == "[" and countClosed == 0:
-                    break
-                elif prg[prgPos] == "]":
-                    countClosed += 1
-                elif prg[prgPos] == "[":
-                    countClosed -= 1
-                prgPos -= 1
-    prgPos += 1
+if __name__ == "__main__":
+    with open("Program_analysis_brainfuck\\brainfuckPrograms\helloworld.b", "r") as file:
+        bf_program_code = file.read()
+
+    execute_brainfuck(bf_program_code)

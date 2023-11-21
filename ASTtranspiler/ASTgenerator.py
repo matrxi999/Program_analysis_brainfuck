@@ -1,3 +1,5 @@
+# Takes brainfuck code and makes AST
+
 class Node:
     def __init__(self, kind, value=None):
         self.kind = kind

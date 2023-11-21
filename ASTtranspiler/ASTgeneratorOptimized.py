@@ -1,3 +1,5 @@
+# Takes optimized python code and makes AST to visualize it later
+
 class Node:
     def __init__(self, kind, value=None):
         self.kind = kind
@@ -9,7 +11,7 @@ class Node:
 
 class PythonParser:
     def __init__(self, code):
-        self.code = code.split('\n')  # Split code into lines
+        self.code = code.split('\n')
         self.position = 0
 
     def parse(self):
