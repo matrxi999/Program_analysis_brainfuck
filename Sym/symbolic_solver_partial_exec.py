@@ -2,18 +2,16 @@ import sympy as sp
 
 class SymbolicValue:
     def __init__(self, initial_value=None, symbolic='x'):
-
+    
         self.symbol = sp.Symbol(symbolic)
-
+        
         if initial_value is None:
             self.expr = self.symbol
+            self.is_changed = False
         else:
             self.expr = self.symbol + initial_value
-
-    def is_changed(self):
-        # fix ze sa pozrie aj ci sa zmenila od posledna
-        return self.value != 0 or self.symbolic
-
+            self.is_changed = True
+        
     def get_concrete_val(self):
         concrete, _ = self.expr.as_coeff_Add()
         return int(concrete)
@@ -23,12 +21,14 @@ class SymbolicValue:
 
     def sym_add(self):
         self.expr += 1
-
+        
     def __add__(self, n):
         # Creating a new instance with the updated expression
+        # self.is_changed = True
         return SymbolicValue(symbolic=str(self.symbol), initial_value=self.get_concrete_val() + n)
 
     def __sub__(self, n):
+        # self.is_changed = True
         # Creating a new instance with the updated expression
         return SymbolicValue(symbolic=str(self.symbol), initial_value=self.get_concrete_val() - n)
 
@@ -40,11 +40,13 @@ class SymbolicValue:
         return str(self.expr)
 
 class BrainfuckSymbolicSolver:
+    #LATEST
     def __init__(self):
         self.tape = [0 for _ in range(3000)]  # tape of size 3000
         self.pointer = 0
         self.symbolic_state = {}  # to track the state - mixed sym and concrete
         self.loop_stack = []  # to keep track of loop
+        self.last_state = []
 
     def interpret(self, code):
         #  interpreter
@@ -120,8 +122,8 @@ class BrainfuckSymbolicSolver:
     def optimize(self, code):
         optimized_code = ""
         self.pointer = 0
-        self.symbolic_state = {}
-        had_to_trans = False
+        
+        # had_to_trans = False
 
         index = 0
         while index < len(code):
@@ -133,8 +135,8 @@ class BrainfuckSymbolicSolver:
             elif char == ']':
                 index = self.execute_loops(char, index, code)
             elif char == '.':
-                #optimized_code += self.apply_optimizations()
-                had_to_trans = True
+                optimized_code += self.apply_optimizations()
+                # had_to_trans = True
                 optimized_code += f"print(chr(tape[{self.pointer}]), end='')\n"
 
             elif char == ',':
@@ -146,30 +148,49 @@ class BrainfuckSymbolicSolver:
                 #optimized_code += char
 
             index += 1
-
-        # Apply any remaining optimizations at the end
-        optimized_code += self.apply_optimizations()
+        if code[index-1] != '.':
+            # Apply any remaining optimizations at the end if it wasnt a print as last command
+            optimized_code += self.apply_optimizations()
         return optimized_code
 
     def apply_optimizations(self):
         optimized_code = ""
         for pointer in range(len(self.tape)):
-            if self.tape[pointer] == 0:
-                continue
-            if isinstance(self.tape[pointer], SymbolicValue):
-                # Is a symbolic expression
-                # optimized_code += f"tape[{pointer}] = input()\n"
+            
+            if self.last_state == []:
+                if self.tape[pointer] == 0:
+                    continue
+                if isinstance(self.tape[pointer], SymbolicValue):
+                    # Is a symbolic expression
+                    # optimized_code += f"tape[{pointer}] = input()\n"
 
-                if self.tape[pointer].get_concrete_val() != 0:
-                    optimized_code += f"tape[{pointer}] += {self.tape[pointer].get_concrete_val()}\n"
-                # else:
-                #     optimized_code += f"tape[{pointer}] = input()\n"
+                    if self.tape[pointer].get_concrete_val() != 0:
+                        optimized_code += f"tape[{pointer}] += {self.tape[pointer].get_concrete_val()}\n"
+                    # else:
+                    #     optimized_code += f"tape[{pointer}] = input()\n"
+                else:
+                    # Is a concrete value
+                    optimized_code += f"tape[{pointer}] = {self.tape[pointer]}\n"
+                    # value.reset()
             else:
-                # Is a concrete value
-                optimized_code += f"tape[{pointer}] = {self.tape[pointer]}\n"
-                # value.reset()
+                if isinstance(self.tape[pointer], SymbolicValue) and isinstance(self.last_state[pointer], SymbolicValue):
+                    # was and still is symbolic
+                    if self.tape[pointer].get_concrete_val() != 0 and self.tape[pointer].get_concrete_val() != self.last_state[pointer].get_concrete_val():
+                        optimized_code += f"tape[{pointer}] += {self.tape[pointer].get_concrete_val()}\n"
+                elif isinstance(self.tape[pointer], SymbolicValue):
+                    #current is symbolic - prev was concrete
+                    if self.tape[pointer].get_concrete_val() != 0:
+                        optimized_code += f"tape[{pointer}] += {self.tape[pointer].get_concrete_val()}\n"
+                elif isinstance(self.last_state[pointer], SymbolicValue):
+                    # previous was symbolic - now is conrete
+                    optimized_code += f"tape[{pointer}] = {self.tape[pointer]}\n"
+                else:
+                    # always was concrete
+                    if(self.tape[pointer] != self.last_state[pointer]):
+                        optimized_code += f"tape[{pointer}] = {self.tape[pointer]}\n"
+                    
 
-        # self.symbolic_state = {}
+        self.last_state = copy.deepcopy(self.tape) 
         return optimized_code
 
     def handle_loop(self, code):

@@ -188,7 +188,7 @@ def translate(sourcecode, optimize_increment=False, optimize_pointer=False, opti
     return '\n'.join(out)
 
 # Example usage with optimizations enabled
-with open("brainfucktest.b", 'r') as file:
+with open("bfTest]\\Program_analysis_brainfuck\\brainfucktest.b", 'r') as file:
     sourcecode = file.read()
 
 optimized_python_code = translate(sourcecode,optimize_increment=True, optimize_pointer=True, optimize_not_executing_loops=True, successive_loops=True, clear_loop_optimization=True, optimize_before_input=True)
