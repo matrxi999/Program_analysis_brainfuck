@@ -8,9 +8,8 @@ def main():
     print(chr(tape[0]), end='')
     tape[1] = 1
     print(chr(tape[1]), end='')
-    tape[2] = input()
+    tape[0] = input()
     tape[1] = 0
-    tape[2] += 3
     
     print()  # New line after program execution
 
