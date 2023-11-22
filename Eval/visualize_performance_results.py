@@ -17,6 +17,7 @@ def plot_comparison(unoptimized, syntactic, symbolic):
     symbolic_values = list(symbolic_normalized.values())
 
     x = range(len(labels))
+
     width = 0.35
 
     fig, ax = plt.subplots()
@@ -26,9 +27,10 @@ def plot_comparison(unoptimized, syntactic, symbolic):
     ax.set_ylabel('Relative Runtime')
     ax.set_title('Runtime by optimization approach')
     ax.set_xticks(x)
-    ax.set_xticklabels(labels)
+    ax.set_xticklabels(labels, rotation=45, ha='right')
     ax.legend()
 
-    ax.set_ylim(0, 1)
+    ax.set_ylim(0, 2)
+    plt.tight_layout()
 
     plt.show()
