@@ -43,51 +43,6 @@ class SymbolicValue:
         return str(self.expr)
 
 
-import copy
-import os
-import time
-import sympy as sp
-
-class SymbolicValue:
-    def __init__(self, initial_value=None, symbolic='x'):
-
-        self.symbol = sp.Symbol(symbolic)
-
-        if initial_value is None:
-            self.expr = self.symbol
-            self.is_changed = False
-        else:
-            self.expr = self.symbol + initial_value
-            self.is_changed = True
-
-    def get_concrete_val(self):
-        concrete, _ = self.expr.as_coeff_Add()
-        return int(concrete)
-
-    def reset(self):
-        self.expr = self.symbol
-
-    def sym_add(self):
-        self.expr += 1
-
-    def __add__(self, n):
-        # Creating a new instance with the updated expression
-        # self.is_changed = True
-        return SymbolicValue(symbolic=str(self.symbol), initial_value=self.get_concrete_val() + n)
-
-    def __sub__(self, n):
-        # self.is_changed = True
-        # Creating a new instance with the updated expression
-        return SymbolicValue(symbolic=str(self.symbol), initial_value=self.get_concrete_val() - n)
-
-    def sym_sub(self):
-        self.expr -= 1
-
-    def __str__(self):
-        # concrete, _ = self.expr.as_coeff_Add()
-        return str(self.expr)
-
-
 class BrainfuckSymbolicSolver:
     # LATEST
     def __init__(self):
@@ -98,32 +53,13 @@ class BrainfuckSymbolicSolver:
         self.last_state = []
         self.loop_map = {}
 
-    def interpret(self, code):
-        #  interpreter
-        for char in code:
-            self.execute_command(char)
-
-    def get_loop_start(self, index, code):
-        counter = 1  # counter to handle nested loops
-        for i in range(index - 1, -1, -1):
-            if code[i] == ']':
-                counter += 1
-            elif code[i] == '[':
-                counter -= 1
-                if counter == 0:
-                    return i
-        return -1
-
-    def get_loop_end(self, index, code):
-        counter = 1  # counter to handle nested loops
-        for i in range(index + 1, len(code)):
-            if code[i] == '[':
-                counter += 1
-            elif code[i] == ']':
-                counter -= 1
-                if counter == 0:
-                    return i
-        return -1
+    def clear(self):
+        self.tape = [0 for _ in range(3000)]
+        self.pointer = 0
+        self.symbolic_state = {}
+        self.loop_stack = []
+        self.last_state = []
+        self.loop_map = {}
 
     def handle_loop_start(self, index, loop_end):
         if isinstance(self.tape[self.pointer], int):
@@ -168,14 +104,6 @@ class BrainfuckSymbolicSolver:
         elif char == ']':
             loop_start = self.loop_map[index]
             return self.handle_loop_end(index, loop_start)
-
-    def symbolic_add_sub(self, char):
-        if self.pointer not in self.symbolic_state:
-            self.symbolic_state[self.pointer] = SymbolicValue()
-        if char == '+':
-            self.symbolic_state[self.pointer].increment()
-        elif char == '-':
-            self.symbolic_state[self.pointer].decrement()
 
     def optimize(self, code):
         optimized_code = ""
@@ -260,9 +188,6 @@ class BrainfuckSymbolicSolver:
         self.last_state = copy.deepcopy(self.tape)
         return optimized_code
 
-    def handle_loop(self, code):
-        current_i = self.symbolic_state[self.pointer]
-
     def preprocess_loops(self, code):
         loop_map = {}
         loop_stack = []
@@ -312,7 +237,6 @@ if __name__ == "__main__":
         # indented_code = '\n'.join('\t' + line for line in optimized_python_code.splitlines())
         indented_code = optimized_python_code.replace('\n', '\n    ')
         return python_code_template.format(indented_code)
-
 
 if __name__ == "__main__":
     solver = BrainfuckSymbolicSolver()
