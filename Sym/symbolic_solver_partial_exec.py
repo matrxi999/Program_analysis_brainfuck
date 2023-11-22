@@ -209,17 +209,16 @@ class BrainfuckSymbolicSolver:
     def optimize_and_convert_to_python(self, bf_filename, result_file_name = "test.py"):
         with open(bf_filename, 'r') as file:
              bf_code = file.read()
-        #bf_code = bf_filename
-        bf_code_striped = bf_code.strip()
-        bf_code_no_new_line = bf_code.replace("\n", "")
-        # print(bf_code_no_new_line)
-        self.loop_map = self.preprocess_loops(bf_code_no_new_line)
-        optimized_python_code = self.optimize(bf_code_no_new_line)
-        # py_filename = bf_filename.rsplit('.', 1)[0] + '.py'
+
+        self.loop_map = self.preprocess_loops(bf_code)
+        optimized_python_code = self.optimize(bf_code)
+
         py_filename = result_file_name
+
         with open(py_filename, 'w') as file:
             file.write(self.generate_python_code(optimized_python_code))
 
+        self.clear()
         print(f"Python code generated: {py_filename}")
 
     def generate_python_code(self, optimized_python_code):
@@ -241,7 +240,19 @@ if __name__ == "__main__":
 if __name__ == "__main__":
     solver = BrainfuckSymbolicSolver()
 
-    start = time.time()
-    solver.optimize_and_convert_to_python("test.b",result_file_name="ttt.py")
-    end = time.time()
-    print(end - start)
+    input_folder_path = "C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\BrainfuckPrograms"
+    output_folder_path = "C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\BFTranspiledPrograms"
+
+    files = os.listdir(input_folder_path)
+
+    #file = "Helloworld.b"
+    #solver.optimize_and_convert_to_python(os.path.join(input_folder_path, file), os.path.join(output_folder_path, os.path.splitext(file)[0] + '.py'))
+
+    for file in files:
+        input_file_name = os.path.join(input_folder_path, file)
+        output_file_name = os.path.join(output_folder_path, os.path.splitext(file)[0] + '.py')
+
+        start = time.time()
+        solver.optimize_and_convert_to_python(input_file_name, output_file_name)
+        end = time.time()
+        print(end - start)
