@@ -189,6 +189,7 @@ class BrainfuckSymbolicSolver:
                                                                                 SymbolicValue):
                     # was and still is symbolic
                     if self.tape[pointer].get_concrete_val() != 0 and self.tape[pointer].get_concrete_val() != \
+                            self.last_state[pointer].get_concrete_val():
                         optimized_code += f"tape[{pointer}] += {self.tape[pointer].get_concrete_val()}\n"
                 elif isinstance(self.tape[pointer], SymbolicValue):
                     # current is symbolic - prev was concrete
