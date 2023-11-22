@@ -3,42 +3,16 @@ from stats_eval_results import students_t_test, transform_to_log
 from visualize_performance_results import plot_comparison
 
 if __name__ == "__main__":
-    '''
-    times_to_run = 1000
-    brainfuck_files_folder = "path/to/brainfuck_folder"
 
-    unoptimized_runner = "path/to/unoptimized_transpiler"
-    syntactic_runner = "path/to/syntacticoptimized_transpiler"
-    symbolic_runner = "path/to/symbolicoptimized_transpiler"
+    times_to_run = 1
 
-    unoptimized_results = test_brainfuck_files(brainfuck_files_folder, unoptimized_runner, times_to_run)
-    syntactic_results = test_brainfuck_files(brainfuck_files_folder, syntactic_runner, times_to_run)
-    symbolic_results = test_brainfuck_files(brainfuck_files_folder, symbolic_runner, times_to_run)
-    '''
+    unoptimized_folder = "C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\ASTtranspiler\\TranspiledBFfilesNonOptimized"
+    syntactic_folder = "C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\ASTtranspiler\\TranspiledBFfiles"
+    symbolic_folder = "C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\Symbolic\\TranspiledBFfiles"
 
-    unoptimized_results = {
-        'file1': 1.0,
-        'file2': 1.2,
-        'file3': 1.2,
-        'file4': 1.2,
-        'file5': 0.8
-    }
-
-    syntactic_results = {
-        'file1': 0.8,
-        'file2': 0.9,
-        'file3': 0.4,
-        'file4': 0.9,
-        'file5': 0.6
-    }
-
-    symbolic_results = {
-        'file1': 0.7,
-        'file2': 0.85,
-        'file3': 0.85,
-        'file4': 0.85,
-        'file5': 0.5
-    }
+    unoptimized_results = test_brainfuck_files(unoptimized_folder, times_to_run)
+    syntactic_results = test_brainfuck_files(syntactic_folder, times_to_run)
+    symbolic_results = test_brainfuck_files(symbolic_folder, times_to_run)
 
     # Student-t-test assuming log-normal distribution
     log_unoptimized = transform_to_log(unoptimized_results)

@@ -1,5 +1,9 @@
-from ASTgenerator import ast
+import os
+
+from ASTgenerator import generate_AST
+
 detected = False
+
 
 def delete_first_unexecutable_loop(ast):
     """If program starts with loop or the first loop is not 
@@ -12,7 +16,8 @@ def delete_first_unexecutable_loop(ast):
         if node.kind == "loop_start":
             ast.children.remove(node)
             return delete_first_unexecutable_loop(ast)
-        
+
+
 def remove_redundant_sequences_before_input(ast):
     """Any "+" and "-" directly before input (",") will be deleted 
     since it would be overwritten anyway"""
@@ -28,9 +33,9 @@ def remove_redundant_sequences_before_input(ast):
         i += 1
 
 
-
-
-def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_clear_loops=False, optimize_consecutive_loops=False, delete_first_loop=False, remove_redundant_sequences=False, copy_loop_optimization=False):
+def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, optimize_clear_loops=False,
+                       optimize_consecutive_loops=False, delete_first_loop=False, remove_redundant_sequences=False,
+                       copy_loop_optimization=False):
     if delete_first_loop:
         delete_first_unexecutable_loop(ast)
 
@@ -38,8 +43,6 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
         remove_redundant_sequences_before_input(ast)
 
     out = [
-        "import time",
-        "start = time.time()",
         "data = [0]*30000",
         "index = 0",
         "def add(x):",
@@ -69,7 +72,6 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
         elif count < 0:
             return indent + f"subtract({-count})", current_index
         return None, current_index
-
 
     def optimize_pointer_commands(node, parent, index, indent):
         """Same as above but for "<" and ">" """
@@ -105,7 +107,7 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
         # The first command should be a single '-'
         if not (len(children) > 2 and children[0].kind == "command" and children[0].value == '-'):
             return False, index, None
-        
+
         steps = 0
         # Loop through the commands looking for '>+' pairs
         for i in range(1, len(children) - 1, 2):
@@ -116,7 +118,8 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
                 break  # Stop if any other pattern is found
 
         # Check if the number of '<' commands equals the number of steps ">+"
-        if all(child.kind == "command" and child.value == '<' for child in children[-steps:-1]) and len(children) == (1+steps*2+steps+1):
+        if all(child.kind == "command" and child.value == '<' for child in children[-steps:-1]) and len(children) == (
+                1 + steps * 2 + steps + 1):
             # generate transpiled code
             transpiled_code = [
                 f"temp = data[index]",
@@ -125,14 +128,12 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
             new_index = index
             for _ in range(steps):
                 new_index += 1
-                transpiled_code.append(f"data[index + {_+1}] = temp")
+                transpiled_code.append(f"data[index + {_ + 1}] = temp")
             new_index -= steps  # Move the index back to the original position
 
             return True, new_index, transpiled_code
 
         return False, index, None
-
-
 
     def optimize_clear_loop(node, indent):
         """ Look for [-] pattern which is called "clear loop" because it just zeroes out the current cell 
@@ -143,7 +144,6 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
             if child.kind == "command" and child.value == '-':
                 return indent + "data[index] = 0"
         return None
-
 
     def optimize_consecutive_loop(node, parent, index):
         """Remove loops that are placed directly after a loop. They will not get executed anyway 
@@ -156,7 +156,8 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
             return current_index - 1
         return index + 1
 
-    def translate_node(node, parent, index, indent_level=0, optimize_clear_loops=False, optimize_consecutive_loops=False, copy_loop_optimization=False):
+    def translate_node(node, parent, index, indent_level=0, optimize_clear_loops=False,
+                       optimize_consecutive_loops=False, copy_loop_optimization=False):
         indent = "    " * indent_level
         global detected
         if node.kind == "command" and not detected:
@@ -176,9 +177,9 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
                 detected, new_index, transpiled_code = detect_special_loop(node, index)
             if detected and copy_loop_optimization:
                 out.extend([indent + line for line in transpiled_code])
-                
+
                 index = new_index
-            
+
             if optimize_consecutive_loops:
                 index = optimize_consecutive_loop(node, parent, index)
 
@@ -191,15 +192,16 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
             if not detected: out.append(indent + "while data[index] != 0:")
             child_index = 0
             while child_index < len(node.children):
-                child_index = translate_node(node.children[child_index], node, child_index, indent_level + 1, optimize_clear_loops, optimize_consecutive_loops, copy_loop_optimization)
+                child_index = translate_node(node.children[child_index], node, child_index, indent_level + 1,
+                                             optimize_clear_loops, optimize_consecutive_loops, copy_loop_optimization)
             return index + 1
         elif node.kind == "loop_end":
             if not detected: out.append(indent + "# End of loop")
             detected = False
             return index + 1
         else:
-            return index+1
-    
+            return index + 1
+
     def translate_command(node, indent):
         command_translations = {
             '>': "index += 1",
@@ -213,13 +215,31 @@ def translate_from_ast(ast, optimize_arithmetic=False, optimize_pointer=False, o
 
     child_index = 0
     while child_index < len(ast.children):
-        child_index = translate_node(ast.children[child_index], ast, child_index, 0, optimize_clear_loops, optimize_consecutive_loops, copy_loop_optimization)
+        child_index = translate_node(ast.children[child_index], ast, child_index, 0, optimize_clear_loops,
+                                     optimize_consecutive_loops, copy_loop_optimization)
 
-    return '\n'.join(out) + '\n' + "end = time.time()" + '\n' + "print(end - start)"
+    return '\n'.join(out) + '\n'
 
 
-optimized_python_code = translate_from_ast(ast, optimize_arithmetic=True, optimize_pointer=True, optimize_consecutive_loops=False, optimize_clear_loops=True, delete_first_loop=False, remove_redundant_sequences=True, copy_loop_optimization=True)
+def write_optimized_file(file_path, optimized_python_code):
+    with open(file_path, "w", encoding="utf-8") as text_file:
+        text_file.write(optimized_python_code)
 
-# Write the optimized Python code to a file
-with open("ASTtranspiler/OptimizedOutput.py", "w", encoding="utf-8") as text_file:
-    text_file.write(optimized_python_code)
+    print(f"Python code generated: {file_path}")
+
+
+if __name__ == "__main__":
+    input_file_path = "C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\brainfuckPrograms"
+    output_file_path = "C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\ASTtranspiler\\TranspiledBFfiles"
+
+    files = os.listdir(input_file_path)
+
+    for file in files:
+        optimized_python_code = translate_from_ast(generate_AST(os.path.join(input_file_path, file)),
+                                                   optimize_arithmetic=True, optimize_pointer=True,
+                                                   optimize_consecutive_loops=True, optimize_clear_loops=True,
+                                                   delete_first_loop=True, remove_redundant_sequences=True,
+                                                   copy_loop_optimization=True)
+
+        files_output_name = os.path.join(output_file_path, os.path.splitext(file)[0] + '.py')
+        write_optimized_file(files_output_name, optimized_python_code)
