@@ -212,12 +212,13 @@ class BrainfuckSymbolicSolver:
     
     def optimize_print(self):
         optimized_code = ""
-        if isinstance(self.tape[self.pointer], SymbolicValue):
-            if self.tape[self.pointer].get_concrete_val() != 0:
-                        optimized_code += f"tape[{self.pointer}] += {self.tape[self.pointer].get_concrete_val()}\n"
-        else:
-            optimized_code += f"tape[{self.pointer}] = {self.tape[self.pointer]}\n"
-        return optimized_code
+        if self.last_state == []:
+            if isinstance(self.tape[self.pointer], SymbolicValue):
+                if self.tape[self.pointer].get_concrete_val() != 0:
+                            optimized_code += f"tape[{self.pointer}] += {self.tape[self.pointer].get_concrete_val()}\n"
+            else:
+                optimized_code += f"tape[{self.pointer}] = {self.tape[self.pointer]}\n"
+            return optimized_code
 
     def apply_optimizations(self):
         optimized_code = ""
@@ -291,10 +292,13 @@ class BrainfuckSymbolicSolver:
         self.loop_map = self.preprocess_loops(bf_code_no_new_line)
         optimized_python_code = self.optimize(bf_code_no_new_line)
         # py_filename = bf_filename.rsplit('.', 1)[0] + '.py'
-        py_filename = result_file_name
-        with open(py_filename, 'w') as file:
-            file.write(self.generate_python_code(optimized_python_code))
-
+        py_filename = os.path.join(os.getcwd(),"Program_analysis_brainfuck","Sym","out",result_file_name)
+        try:
+            with open(py_filename, 'w') as file:
+                file.write(self.generate_python_code(optimized_python_code))
+        except:
+            with open(result_file_name, 'w') as file:
+                file.write(self.generate_python_code(optimized_python_code))
         print(f"Python code generated: {py_filename}")
 
     def generate_python_code(self, optimized_python_code):
@@ -318,6 +322,6 @@ if __name__ == "__main__":
     solver = BrainfuckSymbolicSolver()
 
     start = time.time()
-    solver.optimize_and_convert_to_python("test.b",result_file_name="ttt.py")
+    solver.optimize_and_convert_to_python(".\\Program_analysis_brainfuck\\Bf_test_code\\mandelbrot.b",result_file_name="mandelbrot.py")
     end = time.time()
     print(end - start)
