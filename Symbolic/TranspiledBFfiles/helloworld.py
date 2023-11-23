@@ -9,7 +9,6 @@ def main():
     print(chr(tape[0]), end='')
     tape[0] = 108
     print(chr(tape[0]), end='')
-    tape[0] = 108
     print(chr(tape[0]), end='')
     tape[0] = 111
     print(chr(tape[0]), end='')
@@ -19,7 +18,6 @@ def main():
     print(chr(tape[1]), end='')
     tape[1] = 87
     print(chr(tape[1]), end='')
-    tape[0] = 111
     print(chr(tape[0]), end='')
     tape[0] = 114
     print(chr(tape[0]), end='')
