@@ -9,6 +9,7 @@ class Node:
     def add_child(self, child):
         self.children.append(child)
 
+
 class BrainfuckParser:
     def __init__(self, code):
         self.code = code
@@ -42,26 +43,16 @@ class BrainfuckParser:
                 self.position += 1  # Ignore non-command characters
         return nodes
 
+
 def print_ast(node, indent=0):
     print("  " * indent + node.kind, node.value if node.value else "")
     for child in node.children:
         print_ast(child, indent + 1)
 
-# Example usage
-#code = """++[+[->+<]]--"""
-#parser = BrainfuckParser(code)
-#ast = parser.parse()
-#print_ast(ast)
-
-#print("")
-#print("BF code: " + code)
 
 def generate_AST(bf_filename):
     with open(bf_filename, 'r') as file:
         bf_code = file.read()
-    #bf_code_striped = bf_code.strip()
-    #bf_code_no_new_line = bf_code.replace("\n", "")
-    #print(bf_code_no_new_line)
 
     parser = BrainfuckParser(bf_code)
     ast = parser.parse()
@@ -88,12 +79,8 @@ def to_dot(node, dot_string='', parent_id=0, current_id=[1]):
 
     return dot_string
 
+
 def generate_dot(ast):
     dot_header = "digraph AST {\n  node [shape=box];\n"
     dot_footer = "}\n"
     return dot_header + to_dot(ast) + dot_footer
-
-# Generate DOT output
-#dot_output = generate_dot(ast)
-#with open("ASTtranspiler\generatedFiles\ASTgraph.dot", "w", encoding="utf-8") as text_file:
-#    text_file.write(dot_output)
