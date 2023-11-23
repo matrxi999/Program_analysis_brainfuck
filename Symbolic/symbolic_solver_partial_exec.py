@@ -298,7 +298,11 @@ if __name__ == "__main__":
 if __name__ == "__main__":
     solver = BrainfuckSymbolicSolver()
 
+    # Define input folder path
+    # Brainfuck files folder: brainfuckPrograms
     input_folder_path = "C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\brainfuckPrograms"
+
+    # Define output folder path
     output_folder_path = "C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\Symbolic\\TranspiledBFfiles"
 
     files = os.listdir(input_folder_path)

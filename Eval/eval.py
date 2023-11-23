@@ -18,9 +18,10 @@ def load_results(file_path):
 if __name__ == "__main__":
 
     times_to_run = 10
-    load_data = 1
+    load_data = 1  # Choose whether you want to load data or get new data
 
     if load_data:
+        # Define paths to data that is to be loaded
         unoptimized_results = load_results(
             "C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\Eval\\results\\unoptimized_results10.json")
         syntactic_results = load_results(
@@ -28,6 +29,10 @@ if __name__ == "__main__":
         symbolic_results = load_results(
             "C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\Eval\\results\\symbolic_results10.json")
     else:
+        # Define paths to transpiled brainfuck programs
+        # Non-optimized path: ASTtranspiler/TranspiledBFfilesNonOptimized
+        # syntactic optimized path: ASTtranspiler/TranspiledBFfiles
+        # symbolic optimized path: Symbolic/TranspiledBFfiles
         unoptimized_folder = ("C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\ASTtranspiler"
                               "\\TranspiledBFfilesNonOptimized")
         syntactic_folder = ("C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\ASTtranspiler"
@@ -38,6 +43,7 @@ if __name__ == "__main__":
         syntactic_results = test_brainfuck_files(syntactic_folder, times_to_run)
         symbolic_results = test_brainfuck_files(symbolic_folder, times_to_run)
 
+        # Define paths to save data
         save_results("C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\Eval\\unoptimized_results10.json",
                      unoptimized_results)
         save_results("C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\Eval\\syntactic_results10.json",

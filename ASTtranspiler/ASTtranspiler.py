@@ -229,12 +229,18 @@ def write_optimized_file(file_path, optimized_python_code):
 
 
 if __name__ == "__main__":
+
+    # Define input folder path
+    # Brainfuck files folder: brainfuckPrograms
     input_file_path = "C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\brainfuckPrograms"
+
+    # Define output folder path
     output_file_path = "C:\\Users\\Trippy\\PycharmProjects\\Program_analysis_brainfuck\\ASTtranspiler\\TranspiledBFfiles"
 
     files = os.listdir(input_file_path)
 
     for file in files:
+        # Define optimizations used - If all set to false then non-optimized
         optimized_python_code = translate_from_ast(generate_AST(os.path.join(input_file_path, file)),
                                                    optimize_arithmetic=True, optimize_pointer=True,
                                                    optimize_consecutive_loops=True, optimize_clear_loops=True,
